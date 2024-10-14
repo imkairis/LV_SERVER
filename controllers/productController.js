@@ -4,9 +4,10 @@ const { getAllDocuments } = require('../utils/querryDocument');
 
 
 exports.getAll = async (req, res) => {
-  const query = { 
-    name: req.query.search ? { $regex: req.query.search, $options: 'i' } : null
-  };
+  let query;
+
+  if (req.query.search)
+    query.name = {$regex: req.query.search, $options: 'i'}
 
   const defaultField = 'name';
   getAllDocuments(Product, query, defaultField, req, res);

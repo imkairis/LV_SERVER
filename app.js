@@ -23,6 +23,7 @@ const postRoutes = require('./routes/postRoutes');
 const config = require('./config');
 const morgan = require('morgan')
 const passport = require('./passport')
+const cors = require('cors');
 
 const app = express();
 app.use(passport.initialize());
@@ -32,6 +33,12 @@ mongoose.connect(config.mongoURI, {
   useUnifiedTopology: true
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with your frontend's origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
+  credentials: true, // Enable credentials if needed (for cookies, authentication)
+}));
 
 const version = 'v1'
 
