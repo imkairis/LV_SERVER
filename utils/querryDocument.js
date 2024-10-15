@@ -27,8 +27,6 @@ exports.getAllDocuments = async (Model, query, field, req, res, populate = []) =
 
     const totalPage = Math.ceil(totalItems / limitInt);
 
-    // console.log(objects);
-
     res.json({
       data: objects,
       pagination: {
