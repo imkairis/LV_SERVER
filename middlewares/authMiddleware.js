@@ -3,7 +3,7 @@ const config = require('../config');
 const User = require('../models/User');
 
 exports.isAuthorization = (req, res, next) => {
-  const token = req.header('Authorization').split(' ')[1]
+  const token = req.header('Authorization')?.split(' ')[1]
   if (!token) return res.status(401).json({ error: 'No token, authorization denied' });
   console.log(token)
   try {
