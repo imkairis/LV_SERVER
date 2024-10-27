@@ -48,6 +48,8 @@ const version = "v1";
 
 app.use(bodyParser.json());
 app.use(morgan("dev"));
+app.use(express.static("uploads"));
+
 app.use(`/${version}/auth`, authRoutes);
 app.use(`/${version}/config`, configRoutes);
 app.use(`/${version}/types`, typeRoutes);
