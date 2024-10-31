@@ -25,6 +25,7 @@ exports.getOne = async (req, res) => {
 exports.createOne = async (req, res) => {
   try {
     const { name, description } = req.body;
+    console.log(req.body);
     const object = new AgeGroup({ name, description });
     await object.save();
     res.status(201).json({ data: object });
