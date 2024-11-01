@@ -1,12 +1,14 @@
 const Product = require("../models/Product");
-const { removeVietnameseTones } = require("../utils/common");
 const { deleteFile } = require("../utils/deleteFile");
 const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAll = async (req, res) => {
     let query = {};
     if (req.query.search) {
-        query.name = new RegExp(req.query.search, "i");
+        query = {
+            ...query,
+            $text: { $search: new RegExp(req.query.search, "i") },
+        };
     }
     if (req.query.type) {
         query.type = req.query.type;
