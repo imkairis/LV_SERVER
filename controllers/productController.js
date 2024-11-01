@@ -4,14 +4,22 @@ const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAll = async (req, res) => {
     let query = {};
+
+    if (req.query.type) {
+        query = { ...query, type: req.query.type };
+    }
+    if (req.query.ageGroup) {
+        query = { ...query, ageGroup: req.query.ageGroup };
+    }
+    if (req.query.targets) {
+        query = { ...query, targetAudience: req.query.targets };
+    }
+
     if (req.query.search) {
         query = {
             ...query,
             $text: { $search: new RegExp(req.query.search, "i") },
         };
-    }
-    if (req.query.type) {
-        query.type = req.query.type;
     }
 
     const defaultField = "name";
