@@ -4,6 +4,7 @@ const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAll = async (req, res) => {
     let query = {};
+    let populate = [];
 
     if (req.query.type) {
         query = { ...query, type: req.query.type };
@@ -14,6 +15,9 @@ exports.getAll = async (req, res) => {
     if (req.query.targets) {
         query = { ...query, targetAudience: req.query.targets };
     }
+    if (req.query.populate) {
+        populate = req.query.populate.split(",");
+    }
 
     if (req.query.search) {
         query = {
@@ -23,14 +27,17 @@ exports.getAll = async (req, res) => {
     }
 
     const defaultField = "name";
-    getAllDocuments(Product, query, defaultField, req, res);
+    getAllDocuments(Product, query, defaultField, req, res, populate);
 };
 
 exports.getOne = async (req, res) => {
     try {
         const id = req.params.id;
+        const populate = req.query.populate
+            ? req.query.populate.split(",")
+            : [];
 
-        const object = await Product.findById(id);
+        const object = await Product.findById(id).populate(populate);
 
         res.status(200).json({
             data: object,
