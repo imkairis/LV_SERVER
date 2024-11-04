@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 
 exports.getAll = async (req, res) => {
   try {
-    const cart = await Cart.findOne({user: req.user.id})
+    const cart = await Cart.findOne({user: req.user.id}).populate('items.product')
 
     let totalPrice = 0;
     cart.items.forEach(item => {
@@ -12,10 +12,9 @@ exports.getAll = async (req, res) => {
       }
     });
 
-    res.status(200).json({data: {
-      ...cart,
-      totalPrice,
-    }})
+    cart.totalPrice = totalPrice
+
+    res.status(200).json({data: cart})
   }
   catch(err) {
     console.error(err.message)
@@ -27,7 +26,7 @@ exports.addNewProduct = async (req, res) => {
   try {
     const { product, quantity } = req.body;
 
-    const p = await Book.findById(product);
+    const p = await Product.findById(product);
     if (!p) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -36,7 +35,14 @@ exports.addNewProduct = async (req, res) => {
 
     let cart = await Cart.findOne({ user: req.user.id });
 
-    const existingItemIndex = cart.items.findIndex(item => item.productId.toString() === product);
+    if (!cart) {
+      cart = new Cart({
+          user: req.user.id,
+          items: [],
+      });
+    }
+
+    const existingItemIndex = cart.items.findIndex(item => item.product.toString() === product);
 
     if (existingItemIndex !== -1) {
       cart.items[existingItemIndex].quantity += qty;
@@ -45,7 +51,7 @@ exports.addNewProduct = async (req, res) => {
         cart.items[existingItemIndex].quantity = p.quantity;
       }
     } else {
-      cart.items.push({ productId: product, quantity: qty });
+      cart.items.push({ product: product, quantity: qty });
     }
 
     await cart.save();
@@ -57,10 +63,11 @@ exports.addNewProduct = async (req, res) => {
       }
     });
 
+    cart.totalPrice = totalPrice;
+
     res.status(200).json({
       data: {
-        ...cart,
-        totalPrice,
+        cart
       }
 
     });
@@ -87,7 +94,7 @@ exports.updateCart = async (req, res) => {
       return res.status(404).json({ error: 'Product not found in cart' });
     }
 
-    const p = await Book.findById(product);
+    const p = await Product.findById(product);
     if (!p) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -124,7 +131,9 @@ exports.deleteItemFromCart = async (req, res) => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.product.toString() === product);
+
+    const itemIndex = cart?.items?.findIndex(item => item.product === product);
+    
 
     if (itemIndex === -1) {
       return res.status(404).json({ error: 'Product not found in cart' });
