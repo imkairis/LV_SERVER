@@ -88,7 +88,7 @@ exports.updateCart = async (req, res) => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.product.toString() === product);
+    const itemIndex = cart.items.findIndex(item => item.product._id.toString() === product);
 
     if (itemIndex === -1) {
       return res.status(404).json({ error: 'Product not found in cart' });
@@ -131,10 +131,12 @@ exports.deleteItemFromCart = async (req, res) => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
+    console.log(product)
 
-    const itemIndex = cart?.items?.findIndex(item => item.product === product);
+
+    const itemIndex = cart?.items?.findIndex(item => item.product._id.toString() === product);
     
-
+    console.log(itemIndex)
     if (itemIndex === -1) {
       return res.status(404).json({ error: 'Product not found in cart' });
     }
