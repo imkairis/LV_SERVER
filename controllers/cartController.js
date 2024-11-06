@@ -138,7 +138,7 @@ exports.deleteItemFromCart = async (req, res) => {
         }
 
         const itemIndex = cart?.items?.findIndex(
-            item => item.product.toString() === product
+            item => item.product === product
         );
 
         if (itemIndex === -1) {
