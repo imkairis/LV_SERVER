@@ -60,7 +60,6 @@ app.use(`/${version}/payment-statuses`, paymentStatusRoutes);
 app.use(`/${version}/accounts`, accountRoutes);
 app.use(`/${version}/ages`, ageGroupRoutes);
 app.use(`/${version}/targets`, targetAudienceRoutes);
-app.use(`/${version}/accounts`, accountRoutes);
 app.use(`/${version}/products`, productRoutes);
 app.use(`/${version}/carts`, cartRoutes);
 app.use(`/${version}/orders`, orderRoutes);

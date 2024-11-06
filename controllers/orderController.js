@@ -1,5 +1,6 @@
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
+const { getAllDocuments } = require('../utils/querryDocument');
 
 exports.getAllByAdmin = async (req, res) => {
   const query = { 
@@ -22,24 +23,31 @@ exports.getAllBySelf = async (req, res) => {
 exports.createOne = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    // arr id product ['abc', 'bcd']
+    const { productOrder, address, delivery, deliveryStatus, payment, paymentStatus } = req.body;
     let cart = await Cart.findOne({ user: userId }).populate('items.product');
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ error: 'Cart is empty' });
     }
 
-    const orderItems = cart.items.map(item => ({
-      product: item.product._id,
-      quantity: item.quantity,
-      totalPrice: item.quantity * item.product.price,
-    }));
+    const orderItems = [];
+    cart.items.forEach(item => {
+        if (!productOrder.includes(item.product._id)) {
+            return;
+        }
+        orderItems.push({
+            product: item.product._id,
+            quantity: item.quantity,
+            totalPrice: item.quantity * item.product.price,
+        });
+    });
 
     const totalPrice = orderItems.reduce((total, item) => total + item.totalPrice, 0);
 
     const newOrder = new Order({
       user: userId,
-      address: req.body.address,  
+      address: address,  
       items: orderItems,
       delivery: req.body.delivery,  
       deliveryStatus: req.body.deliveryStatus, 
@@ -50,7 +58,7 @@ exports.createOne = async (req, res) => {
 
     await newOrder.save();
 
-    cart.items = [];
+    cart.items = cart.items.filter(i => !productOrder.includes(i));
     await cart.save();
 
     res.status(201).json({ data: newOrder });
