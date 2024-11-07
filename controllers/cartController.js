@@ -134,15 +134,18 @@ exports.deleteItemFromCart = async (req, res) => {
         let cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
-            return res.status(404).json({ error: "Cart not found" });
+            return res.status(400).json({ error: "Cart not found" });
         }
 
+        console.log("cart", cart.items);
+        
+
         const itemIndex = cart?.items?.findIndex(
-            item => item.product === product
+            item => item.product.toString() === product
         );
 
         if (itemIndex === -1) {
-            return res.status(404).json({ error: "Product not found in cart" });
+            return res.status(400).json({ error: "Product not found in cart" });
         }
 
         cart.items.splice(itemIndex, 1);
