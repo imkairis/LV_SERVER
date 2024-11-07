@@ -98,6 +98,22 @@ exports.updateOne = async (req, res) => {
                 object[key] = [...object[key], props[key]];
                 continue;
             }
+            if(key === "removeAddress") {
+                object.address = object.address.filter((address) => {
+                    const parsedJson = JSON.parse(address);
+                    return parsedJson._id !== props[key];
+                });
+                continue;
+            }
+            if (key === 'updateAddress') {
+                object.address.forEach((address, index) => {
+                    const parsedJson = JSON.parse(address);
+                    if (parsedJson._id === props[key].address._id) {
+                        object.address[index] = JSON.stringify(props[key].address);
+                    }
+                });
+                continue;
+            }
             if (object.hasOwnProperty(key)) {
                 object[key] = props[key];
             }
