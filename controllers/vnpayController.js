@@ -25,9 +25,9 @@ exports.createPaymentUrl = async (req, res, next) => {
     let amount = order.totalPrice;
     
     let locale = req.body.language;
-    if(locale === null || locale === ''){
+    // if(locale === null || locale === ''){
         locale = 'vn';
-    }
+    // }
     let currCode = 'VND';
     let vnp_Params = {};
     vnp_Params['vnp_Version'] = '2.1.0';
@@ -52,7 +52,7 @@ exports.createPaymentUrl = async (req, res, next) => {
     let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex"); 
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
-
+console.log(vnpUrl);
     res.json({vnpUrl});
 }
 
@@ -63,6 +63,7 @@ exports.vnpayReturn = async (req, res) => {
   let orderId = vnp_Params['vnp_TxnRef'];
   let code = vnp_Params['vnp_ResponseCode']
 
+  
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
@@ -87,12 +88,28 @@ exports.vnpayReturn = async (req, res) => {
           // order.paymentStatus = xxx
           await order.save();
 
-          res.redirect(`${process.env.CLIENT_ROOT}/checkout/success`)
+          res.redirect(`${config.clientroot}/thanks`)
       }
       else {
-          res.redirect(`${process.env.CLIENT_ROOT}`)
+          res.redirect(`${config.clientroot}`)
       }
   } else{
       res.send({status: 'success', code: '97'})
   }
+  
+}
+function sortObject(obj) {
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+        }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
 }

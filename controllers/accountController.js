@@ -76,10 +76,10 @@ exports.createOne = async (req, res) => {
 
 exports.updateOne = async (req, res) => {
     try {
-        const { isAdmin, ...props } = req.body;
+        const {  ...props } = req.body;
         const id = req.params.id;
 
-        console.log(req.user.isAdmin, req.user.id, id, props);
+        
 
         if (req.user.isAdmin === false || req.user.id !== id) {
             return res.status(403).json({ error: "Forbidden" });
@@ -91,7 +91,7 @@ exports.updateOne = async (req, res) => {
             return res.status(400).json({ error: "Not found" });
         }
 
-        object.isAdmin = isAdmin;
+        
 
         for (const key in props) {
             if (key === "address") {
