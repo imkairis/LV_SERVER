@@ -1,6 +1,6 @@
-const Cart = require("../models/Cart");
-const Order = require("../models/Order");
-const { getAllDocuments } = require("../utils/querryDocument");
+const Cart = require('../models/Cart');
+const Order = require('../models/Order');
+const { getAllDocuments } = require('../utils/querryDocument');
 
 exports.getAllByAdmin = async (req, res) => {
     const query = {};
@@ -40,9 +40,11 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAllBySelf = async (req, res) => {
-    const query = {
-        user: req.user.toString(),
-    };
+  
+
+  const query = { 
+    user: req.user.id
+  };
 
     const defaultField = "createdAt";
     getAllDocuments(Order, query, defaultField, req, res);

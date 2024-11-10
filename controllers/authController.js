@@ -291,3 +291,34 @@ exports.googleCallback = async (req, res) => {
         }
     );
 };
+
+exports.changePassword = async (req, res) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ msg: "Current password is incorrect" });
+        }
+
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ msg: "New passwords do not match" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+
+        await user.save();
+
+        res.json({ msg: "Password updated successfully" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
