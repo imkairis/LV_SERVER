@@ -1,6 +1,7 @@
 const moment = require('moment');
 const Order = require('../models/Order');
 const config = require('../config');
+const { fail } = require('assert');
 
 
 exports.createPaymentUrl = async (req, res, next) => {
@@ -91,7 +92,13 @@ exports.vnpayReturn = async (req, res) => {
           res.redirect(`${config.clientroot}/thanks`)
       }
       else {
+        let order = await Order.findById(orderId);
+          order.deliveryStatus = 'failed';
+          // TODO: Them payment status vao
+          // order.paymentStatus = xxx
+          await order.save();
           res.redirect(`${config.clientroot}`)
+          
       }
   } else{
       res.send({status: 'success', code: '97'})
