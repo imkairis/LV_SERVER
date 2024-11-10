@@ -48,6 +48,8 @@ const version = "v1";
 
 app.use(bodyParser.json());
 app.use(morgan("dev"));
+app.use(express.static("uploads"));
+
 app.use(`/${version}/auth`, authRoutes);
 app.use(`/${version}/config`, configRoutes);
 app.use(`/${version}/types`, typeRoutes);
@@ -58,7 +60,6 @@ app.use(`/${version}/payment-statuses`, paymentStatusRoutes);
 app.use(`/${version}/accounts`, accountRoutes);
 app.use(`/${version}/ages`, ageGroupRoutes);
 app.use(`/${version}/targets`, targetAudienceRoutes);
-app.use(`/${version}/accounts`, accountRoutes);
 app.use(`/${version}/products`, productRoutes);
 app.use(`/${version}/carts`, cartRoutes);
 app.use(`/${version}/orders`, orderRoutes);
