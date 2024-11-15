@@ -1,24 +1,66 @@
-const Cart = require('../models/Cart');
-const Order = require('../models/Order');
-const { getAllDocuments } = require('../utils/querryDocument');
+const Cart = require("../models/Cart");
+const Order = require("../models/Order");
+const User = require("../models/User");
+const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllByAdmin = async (req, res) => {
-    const query = {
-        user: req.query.search
-            ? { $regex: req.query.search, $options: "i" }
-            : null,
-    };
+    const query = {};
+    // const populate = ["user", "items.product"];
+    const populate = [
+        {
+            path: "user",
+            select: "name email fullname",
+        },
+        {
+            path: "items.product",
+            select: "name price",
+        },
+    ];
+    if (req.query.search) {
+        query = {
+            ...query,
+            $text: { $search: new RegExp(req.query.search, "i") },
+        };
+    }
 
     const defaultField = "createdAt";
-    getAllDocuments(Order, query, defaultField, req, res);
+    getAllDocuments(Order, query, defaultField, req, res, populate);
+};
+
+exports.getById = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const user = await User.findById(req.user.id);
+
+        const populate = ["items.product", "user"];
+        const order = await Order.findById(orderId).populate(populate);
+
+        console.log(`
+            user: ${user._id.toString()}
+            isAdmin: ${user.isAdmin}
+            order_user: ${order.user._id.toString()}    
+            condition: ${
+                !user.isAdmin || order.user._id.toString() !== req.user.id
+            }
+        `);
+
+        if (!user.isAdmin) {
+            if (order.user._id.toString() !== req.user.id) {
+                return res.status(403).json({ error: "Permission denied" });
+            }
+        }
+
+        return res.status(200).json({ data: order });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+    }
 };
 
 exports.getAllBySelf = async (req, res) => {
-  
-
-  const query = { 
-    user: req.user.id
-  };
+    const query = {
+        user: req.user.id,
+    };
 
     const defaultField = "createdAt";
     getAllDocuments(Order, query, defaultField, req, res);

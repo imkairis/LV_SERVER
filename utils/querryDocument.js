@@ -18,7 +18,7 @@ exports.getAllDocuments = async (
         } = req.query;
 
         const sort = {};
-        sort[orderBy] = descending === "true" ? -1 : 1;
+        sort[orderBy] = descending === "true" ? 1 : -1;
 
         const skip = (page - 1) * parseInt(limit, 10);
         const limitInt = Math.max(parseInt(limit, 10), 1);
