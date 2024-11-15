@@ -270,7 +270,7 @@ exports.getInfo = async (req, res) => {
 };
 
 exports.googleCallback = async (req, res) => {
-    let user = await User.findById(req.user.user.id);
+    let user = await User.findById(req.user.id);
     if (!user) {
         return res.status(400).json({ error: "Invalid credentials" });
     }
