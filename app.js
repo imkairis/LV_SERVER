@@ -19,6 +19,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const vnpayRoutes = require("./routes/vnpayRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const postRoutes = require("./routes/postRoutes");
+const donationRoutes = require("./routes/donationRoutes");
 
 const config = require("./config");
 const morgan = require("morgan");
@@ -66,6 +67,7 @@ app.use(`/${version}/orders`, orderRoutes);
 app.use(`/${version}/vnpay`, vnpayRoutes);
 app.use(`/${version}/feedbacks`, feedbackRoutes);
 app.use(`/${version}/posts`, postRoutes);
+app.use(`/${version}/donations`, donationRoutes);
 app.use(`/${version}`, express.static("uploads"));
 
 function getServerIP() {
