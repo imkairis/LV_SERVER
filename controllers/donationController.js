@@ -1,15 +1,14 @@
 const Donation = require("../models/Donation");
 const { getAllDocuments } = require("../utils/queryDocument");
 
-// Lấy danh sách donation
 exports.getAllDonations = async (req, res) => {
     const query = {};
     if (req.query.search) {
         query.name = { $regex: req.query.search, $options: "i" };
     }
 
-    const defaultField = "name"; // Sắp xếp mặc định theo tên
-    const populate = ["user", "registrants"]; // Populates các tham chiếu liên quan
+    const defaultField = "name"; 
+    const populate = ["user", "type"]; 
     getAllDocuments(Donation, query, defaultField, req, res, populate);
 };
 
@@ -21,17 +20,16 @@ exports.getAllMyDonations = async (req, res) => {
       query.name = { $regex: req.query.search, $options: "i" };
   }
 
-  const defaultField = "name"; // Sắp xếp mặc định theo tên
-  const populate = ["user", "registrants"]; // Populates các tham chiếu liên quan
+  const defaultField = "name"; 
+  const populate = ["user", "type"];
   getAllDocuments(Donation, query, defaultField, req, res, populate);
 };
 
-// Lấy chi tiết donation
 exports.getDonationDetails = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const donation = await Donation.findById(id).populate("user registrants");
+        const donation = await Donation.findById(id).populate("user type");
 
         if (!donation) {
             return res.status(404).json({ error: "Donation not found" });
@@ -44,9 +42,8 @@ exports.getDonationDetails = async (req, res) => {
     }
 };
 
-// Tạo mới donation
 exports.createDonation = async (req, res) => {
-    const { user, name, age, historyOfIssue, currentIssue, status, address } = req.body;
+    const { user, name, age, historyOfIssue, currentIssue, status, address, description, type } = req.body;
 
     try {
         const newDonation = new Donation({
@@ -57,8 +54,13 @@ exports.createDonation = async (req, res) => {
             currentIssue,
             status,
             address,
-            registrants: [],
-        });
+            type,
+            description
+        })
+
+        if (req.files?.["images"] && req.files["images"].length > 0) {
+            newDonation.images = req.files["images"].map(file => file.filename);
+        }
 
         await newDonation.save();
         res.status(201).json({ data: newDonation });
@@ -82,8 +84,13 @@ exports.updateDonation = async (req, res) => {
 
         for (const key in props) {
             if (donation.hasOwnProperty(key)) {
-                donation[key] = props[key];
+                donation[key] = props[key] || donation[key];
             }
+        }
+
+        if (req.files?.["images"] && req.files["images"].length > 0) {
+            const images = req.files["images"].map(file => file.filename);
+            donation.images = [...donation.images, ...images];
         }
 
         await donation.save();
@@ -94,7 +101,6 @@ exports.updateDonation = async (req, res) => {
     }
 };
 
-// Xóa donation
 exports.deleteDonation = async (req, res) => {
     try {
         const { id } = req.params;
@@ -108,82 +114,3 @@ exports.deleteDonation = async (req, res) => {
     }
 };
 
-// Đăng ký nhận
-exports.registerDonation = async (req, res) => {
-  try {
-      const { id } = req.params;
-      const userId = req.user.id;
-
-      const donation = await Donation.findById(id);
-
-      if (!donation) {
-          return res.status(404).json({ error: "Donation not found" });
-      }
-
-      // Kiểm tra nếu user đã tồn tại trong mảng `registrants`
-      if (donation.registrants.includes(userId)) {
-          return res.status(200).json({ message: "Already registered", data: donation });
-      }
-
-      // Thêm user vào mảng `registrants`
-      donation.registrants.push(userId);
-
-      await donation.save();
-      res.status(200).json({ message: "Registered successfully", data: donation });
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server error" });
-  }
-};
-
-// Hủy đăng ký nhận
-exports.unregisterDonation = async (req, res) => {
-  try {
-      const { id } = req.params;
-      const userId = req.user.id;
-
-      const donation = await Donation.findById(id);
-
-      if (!donation) {
-          return res.status(404).json({ error: "Donation not found" });
-      }
-
-      // Kiểm tra nếu user không tồn tại trong mảng `registrants`
-      if (!donation.registrants.includes(userId)) {
-          return res.status(200).json({ message: "Not registered", data: donation });
-      }
-
-      // Xóa user khỏi mảng `registrants`
-      donation.registrants = donation.registrants.filter(
-          (registrant) => registrant.toString() !== userId
-      );
-
-      await donation.save();
-      res.status(200).json({ message: "Unregistered successfully", data: donation });
-  } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server error" });
-  }
-};
-
-
-// Kiểm tra đăng ký của bản thân
-exports.checkRegistration = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const donation = await Donation.findById(id);
-
-        if (!donation) {
-            return res.status(404).json({ error: "Donation not found" });
-        }
-
-        const isRegistered = donation.registrants.includes(userId);
-
-        res.status(200).json({ data: { isRegistered } });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ error: "Server error" });
-    }
-};

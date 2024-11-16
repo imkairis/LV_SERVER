@@ -6,6 +6,11 @@ const DonationSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  type: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductType',
+    required: true,
+  },
   name: {
     type: String,
     required: true
@@ -30,9 +35,18 @@ const DonationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  registrants: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  }]
+  phone: {
+    type: String,
+    required: true
+  },
+  images: [{
+    type: String
+  }],
+  description: String,
+  createDate: {
+    type: Date,
+    default: Date.now,
+  },
 })
+
+module.exports = mongoose.model('Donation', DonationSchema);
