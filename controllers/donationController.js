@@ -47,7 +47,7 @@ exports.getDonationDetails = async (req, res) => {
 // Tạo mới donation
 exports.createDonation = async (req, res) => {
     const { user, name, age, historyOfIssue, currentIssue, status, address } = req.body;
-
+    console.log(req);
     try {
         const newDonation = new Donation({
             user,
@@ -59,6 +59,7 @@ exports.createDonation = async (req, res) => {
             address,
             registrants: [],
         });
+    
 
         await newDonation.save();
         res.status(201).json({ data: newDonation });
