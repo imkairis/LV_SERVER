@@ -1,5 +1,5 @@
 const Donation = require("../models/Donation");
-const { getAllDocuments } = require("../utils/queryDocument");
+const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllDonations = async (req, res) => {
     const query = {};
