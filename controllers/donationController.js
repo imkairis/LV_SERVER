@@ -44,7 +44,7 @@ exports.getDonationDetails = async (req, res) => {
 };
 
 exports.createDonation = async (req, res) => {
-    const { user, name, age, historyOfIssue, currentIssue, status, address, description, type, phone } = req.body;
+    const { user, name, age, historyOfIssue, currentIssue, status, address, description, type, phone, gender } = req.body;
 
     try {
         const newDonation = new Donation({
@@ -58,6 +58,8 @@ exports.createDonation = async (req, res) => {
             type,
             description,
             phone,
+            gender,
+            
         })
 
         if (req.files?.["images"] && req.files["images"].length > 0) {
