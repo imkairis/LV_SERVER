@@ -7,8 +7,7 @@ const DonationSchema = new mongoose.Schema({
     required: true,
   },
   type: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProductType',
+    type: String,
     required: true,
   },
   name: {
@@ -37,7 +36,7 @@ const DonationSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true
+    required: false
   },
   images: [{
     type: String

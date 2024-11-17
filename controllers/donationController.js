@@ -3,6 +3,7 @@ const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllDonations = async (req, res) => {
     const query = {};
+    
     if (req.query.search) {
         query.name = { $regex: req.query.search, $options: "i" };
     }
@@ -43,7 +44,7 @@ exports.getDonationDetails = async (req, res) => {
 };
 
 exports.createDonation = async (req, res) => {
-    const { user, name, age, historyOfIssue, currentIssue, status, address, description, type } = req.body;
+    const { user, name, age, historyOfIssue, currentIssue, status, address, description, type, phone } = req.body;
 
     try {
         const newDonation = new Donation({
@@ -55,12 +56,14 @@ exports.createDonation = async (req, res) => {
             status,
             address,
             type,
-            description
+            description,
+            phone,
         })
 
         if (req.files?.["images"] && req.files["images"].length > 0) {
             newDonation.images = req.files["images"].map(file => file.filename);
         }
+        console.log(req.files.images);
 
         await newDonation.save();
         res.status(201).json({ data: newDonation });
