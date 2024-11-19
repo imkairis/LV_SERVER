@@ -22,4 +22,9 @@ router.put("/:id",isAuthorization, uploadFields([
 ]), donationController.updateDonation);
 router.delete("/:id",isAuthorization,  donationController.deleteDonation);
 
+router.get("/:donationId/comments", donationController.getCommentsByDonation);
+router.post("/:donationId/comments", isAuthorization, donationController.addComment);
+router.put("/comments/:commentId", isAuthorization, donationController.updateComment);
+router.delete("/comments/:commentId", isAuthorization, donationController.deleteComment);
+
 module.exports = router;

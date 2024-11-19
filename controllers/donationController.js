@@ -1,4 +1,5 @@
 const Donation = require("../models/Donation");
+const DonationComment = require("../models/DonationComment");
 const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllDonations = async (req, res) => {
@@ -117,3 +118,90 @@ exports.deleteDonation = async (req, res) => {
     }
 };
 
+
+exports.getCommentsByDonation = async (req, res) => {
+    const { donationId } = req.params;
+
+    try {
+        const query = { donation: donationId };
+        const defaultField = "createdAt";
+        const populate = ["user"];
+        getAllDocuments(DonationComment, query, defaultField, req, res, populate);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+exports.addComment = async (req, res) => {
+    const { donationId } = req.params;
+    const { content } = req.body;
+
+    try {
+        const donation = await Donation.findById(donationId);
+        if (!donation) {
+            return res.status(404).json({ error: "Donation not found" });
+        }
+
+        const newComment = new DonationComment({
+            user: req.user.id, 
+            donation: donationId,
+            content,
+        });
+
+        await newComment.save();
+        res.status(201).json({ data: newComment });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+
+exports.updateComment = async (req, res) => {
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    try {
+        const comment = await DonationComment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        if (String(comment.user) !== req.user.id) {
+            return res.status(403).json({ error: "You are not allowed to edit this comment" });
+        }
+
+        comment.content = content;
+        await comment.save();
+
+        res.status(200).json({ data: comment });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+
+exports.deleteComment = async (req, res) => {
+    const { commentId } = req.params;
+
+    try {
+        const comment = await DonationComment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: "Comment not found" });
+        }
+
+        if (String(comment.user) !== req.user.id) {
+            return res.status(403).json({ error: "You are not allowed to delete this comment" });
+        }
+
+        await comment.remove();
+        res.status(204).send();
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+};
