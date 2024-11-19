@@ -21,11 +21,11 @@ const ProductSchema = new mongoose.Schema({
     },
     cost: {
         type: Number,
-        required: true,
+        required: false,
     },
     stockQuantity: {
         type: Number,
-        required: true,
+        required: false,
         default: 1,
     },
     description: {

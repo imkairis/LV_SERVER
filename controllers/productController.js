@@ -55,8 +55,7 @@ exports.createProduct = async (req, res) => {
             price,
             type,
             quantity,
-            cost,
-            stockQuantity,
+           
             description,
             userManual,
             weight,
@@ -73,8 +72,7 @@ exports.createProduct = async (req, res) => {
             price,
             quantity,
             type,
-            cost,
-            stockQuantity,
+           
             description,
             userManual,
             weight,
@@ -105,9 +103,9 @@ exports.updateProduct = async (req, res) => {
             name,
             price,
             quantity,
-            cost,
+           
             type,
-            stockQuantity,
+           
             description,
             userManual,
             weight,
@@ -128,8 +126,8 @@ exports.updateProduct = async (req, res) => {
         object.name = name || object.name;
         object.price = price || object.price;
         object.quantity = quantity || object.quantity;
-        object.cost = cost || object.cost;
-        object.stockQuantity = stockQuantity || object.stockQuantity;
+       
+       
         object.description = description || object.description;
         object.userManual = userManual || object.userManual;
         object.weight = weight || object.weight;

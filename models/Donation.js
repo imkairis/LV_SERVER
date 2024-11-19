@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const DonationSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -13,6 +12,11 @@ const DonationSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  gender: { // Thêm trường giới tính
+    type: String,
+    // Giới hạn giá trị
+    required: true,
   },
   age: {
     type: Number,
@@ -46,6 +50,6 @@ const DonationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
+});
 
 module.exports = mongoose.model('Donation', DonationSchema);
