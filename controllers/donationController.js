@@ -4,27 +4,27 @@ const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllDonations = async (req, res) => {
     const query = {};
-    
+
     if (req.query.search) {
         query.name = { $regex: req.query.search, $options: "i" };
     }
 
-    const defaultField = "name"; 
-    const populate = ["user", "type"]; 
+    const defaultField = "name";
+    const populate = ["user", "type"];
     getAllDocuments(Donation, query, defaultField, req, res, populate);
 };
 
 exports.getAllMyDonations = async (req, res) => {
-  const query = {
-    user: req.user.id
-  };
-  if (req.query.search) {
-      query.name = { $regex: req.query.search, $options: "i" };
-  }
+    const query = {
+        user: req.user.id
+    };
+    if (req.query.search) {
+        query.name = { $regex: req.query.search, $options: "i" };
+    }
 
-  const defaultField = "name"; 
-  const populate = ["user", "type"];
-  getAllDocuments(Donation, query, defaultField, req, res, populate);
+    const defaultField = "name";
+    const populate = ["user", "type"];
+    getAllDocuments(Donation, query, defaultField, req, res, populate);
 };
 
 exports.getDonationDetails = async (req, res) => {
@@ -60,7 +60,7 @@ exports.createDonation = async (req, res) => {
             description,
             phone,
             gender,
-            
+
         })
 
         if (req.files?.["images"] && req.files["images"].length > 0) {
@@ -146,7 +146,7 @@ exports.addComment = async (req, res) => {
         }
 
         const newComment = new DonationComment({
-            user: req.user.id, 
+            user: req.user.id,
             donation: donationId,
             content,
         });
@@ -190,7 +190,7 @@ exports.deleteComment = async (req, res) => {
     const { commentId } = req.params;
 
     try {
-        const comment = await DonationComment.findById(commentId);
+        const comment = await DonationComment.findByIdAndDelete(commentId);
 
         if (!comment) {
             return res.status(404).json({ error: "Comment not found" });
@@ -200,8 +200,7 @@ exports.deleteComment = async (req, res) => {
             return res.status(403).json({ error: "You are not allowed to delete this comment" });
         }
 
-        await comment.remove();
-        res.status(204).send();
+        res.status(204).send({ message: "Comment deleted" });
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: "Server error" });
