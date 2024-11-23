@@ -62,6 +62,8 @@ const ProductSchema = new mongoose.Schema({
             type: String,
         },
     ],
+}, {
+    timestamps: true,
 });
 
 ProductSchema.index({ name: "text", description: "text" });

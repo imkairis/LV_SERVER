@@ -20,6 +20,7 @@ const vnpayRoutes = require("./routes/vnpayRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const postRoutes = require("./routes/postRoutes");
 const donationRoutes = require("./routes/donationRoutes");
+const staticRoutes = require("./routes/staticRoutes");
 
 const config = require("./config");
 const morgan = require("morgan");
@@ -30,10 +31,7 @@ const app = express();
 app.use(passport.initialize());
 
 mongoose
-    .connect(config.mongoURI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(config.mongoURI)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.log(err));
 
@@ -68,6 +66,7 @@ app.use(`/${version}/vnpay`, vnpayRoutes);
 app.use(`/${version}/feedbacks`, feedbackRoutes);
 app.use(`/${version}/posts`, postRoutes);
 app.use(`/${version}/donations`, donationRoutes);
+app.use(`/${version}/statics`, staticRoutes);
 app.use(`/${version}`, express.static("uploads"));
 
 function getServerIP() {

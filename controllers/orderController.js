@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllByAdmin = async (req, res) => {
-    const query = {};
+    let query = {};
     // const populate = ["user", "items.product"];
     const populate = [
         {
@@ -41,8 +41,7 @@ exports.getById = async (req, res) => {
             user: ${user._id.toString()}
             isAdmin: ${user.isAdmin}
             order_user: ${order.user._id.toString()}    
-            condition: ${
-                !user.isAdmin || order.user._id.toString() !== req.user.id
+            condition: ${!user.isAdmin || order.user._id.toString() !== req.user.id
             }
         `);
 
