@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const User = require("../models/User");
 
 const today = new Date();
 const firstDayInMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -65,6 +66,14 @@ const getCountProductNearlyExpired = async () => {
 
     return await Product.countDocuments({ expirationDate: { $gte: today, $lte: thirtyDaysFromNow } });
 }
+
+const getCountProducts = async () => {
+    return await Product.countDocuments();
+};
+
+const getCountUser = async () => {
+    return await User.countDocuments({ isAdmin: false });
+};
 
 const getProductSell = async () => {
     const res = await Order.aggregate([
@@ -376,13 +385,15 @@ const getStatistics = async (req, res) => {
         const countNewProduct = await getCountNewProduct();
         const countNewOrderSuccess = await getCountNewOrderSuccess();
         const countProductNearlyExpired = await getCountProductNearlyExpired();
-        const productSell = await getProductSell();
+        const countProducts = await getCountProducts();
+        const countUser = await getCountUser();
 
         res.status(200).json({
             countNewProduct,
             countNewOrderSuccess,
             countProductNearlyExpired,
-            productSell,
+            countProducts,
+            countUser,
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
