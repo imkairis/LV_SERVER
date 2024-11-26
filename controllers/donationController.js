@@ -88,11 +88,13 @@ exports.updateDonation = async (req, res) => {
             return res.status(404).json({ error: "Donation not found" });
         }
 
-        for (const key in props) {
-            if (donation.hasOwnProperty(key)) {
-                donation[key] = props[key] || donation[key];
-            }
+        const accessProps = ["status"];
+
+        if (!accessProps.every(key => Object.keys(props).includes(key))) {
+            return res.status(400).json({ error: "Invalid updates" });
         }
+
+        Object.assign(donation, props);
 
         if (req.files?.["images"] && req.files["images"].length > 0) {
             const images = req.files["images"].map(file => file.filename);
