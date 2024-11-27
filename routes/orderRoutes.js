@@ -8,5 +8,7 @@ router.get("/admin", isAuthorization, isAdmin, controller.getAllByAdmin);
 router.get("/order-detail/:id", isAuthorization, controller.getById);
 router.post("/", isAuthorization, controller.createOne);
 router.put("/admin/:id", isAuthorization, controller.updateDeliveryStatus);
+router.put("/cancel/:id", isAuthorization, controller.cancelOrder);
+router.put("/mark-as-delivered/:id", isAuthorization, controller.markAsDelivered);
 
 module.exports = router;

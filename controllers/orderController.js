@@ -57,7 +57,56 @@ exports.getById = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+// Trong orderController.js
+exports.markAsDelivered = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId);
 
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        // Kiểm tra nếu trạng thái giao hàng là 'shipping'
+        if (order.deliveryStatus !== "shipping") {
+            return res.status(400).json({ error: "Order cannot be marked as delivered, it's not shipping" });
+        }
+
+        // Cập nhật trạng thái giao hàng thành 'delivered'
+        order.deliveryStatus = "delivered";
+        await order.save();
+
+        res.status(200).json({ data: order });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.cancelOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        // Kiểm tra xem trạng thái giao hàng có phải là 'pending' không
+        if (order.deliveryStatus !== "pending") {
+            return res.status(400).json({ error: "Order cannot be canceled, it's not pending" });
+        }
+
+        // Cập nhật trạng thái giao hàng thành 'failed'
+        order.deliveryStatus = "failed";
+        await order.save();
+
+        res.status(200).json({ data: order });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
 exports.getAllBySelf = async (req, res) => {
     const query = {
         user: req.user.id,
