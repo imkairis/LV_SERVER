@@ -10,5 +10,5 @@ router.post("/", isAuthorization, controller.createOne);
 router.put("/admin/:id", isAuthorization, controller.updateDeliveryStatus);
 router.put("/cancel/:id", isAuthorization, controller.cancelOrder);
 router.put("/mark-as-delivered/:id", isAuthorization, controller.markAsDelivered);
-
+router.put("/:id", isAuthorization, controller.updateDeliveryStatus);
 module.exports = router;

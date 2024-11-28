@@ -9,6 +9,11 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ["Còn hàng", "Sắp hết hàng", "Hết hàng"],
+        default: "Còn hàng",
+    },
     type: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ProductType",
@@ -64,6 +69,16 @@ const ProductSchema = new mongoose.Schema({
     ],
 }, {
     timestamps: true,
+});
+ProductSchema.pre("save", function (next) {
+    if (this.quantity === 0) {
+        this.status = "Hết hàng";
+    } else if (this.quantity > 0 && this.quantity <= 10) {
+        this.status = "Sắp hết hàng";
+    } else {
+        this.status = "Còn hàng";
+    }
+    next();
 });
 
 ProductSchema.index({ name: "text", description: "text" });
