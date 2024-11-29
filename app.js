@@ -32,7 +32,9 @@ app.use(passport.initialize());
 
 mongoose
     .connect(config.mongoURI)
-    .then(() => console.log("MongoDB connected"))
+    .then(() => {
+        console.log("MongoDB connected")
+    })
     .catch(err => console.log(err));
 
 app.use(

@@ -18,11 +18,19 @@ exports.getAll = async (req, res) => {
     if (req.query.populate) {
         populate = req.query.populate.split(",");
     }
+    if (req.query.status) {
+        query = { ...query, status: req.query.status };
+    }
+    if (req.query.price) {
+        const [min, max] = req.query.price.split("-");
+        query = { ...query, price: { $gte: min, $lte: max } };
+    }
 
     if (req.query.search) {
         query = {
             ...query,
-            $text: { $search: new RegExp(req.query.search, "i") },
+            // name: { $regex: req.query.search, $options: "i" },
+            $text: { $search: req.query.search, $diacriticSensitive: true },
         };
     }
 
@@ -55,7 +63,7 @@ exports.createProduct = async (req, res) => {
             price,
             type,
             quantity,
-           
+
             description,
             userManual,
             weight,
@@ -72,7 +80,7 @@ exports.createProduct = async (req, res) => {
             price,
             quantity,
             type,
-           
+
             description,
             userManual,
             weight,
@@ -103,9 +111,9 @@ exports.updateProduct = async (req, res) => {
             name,
             price,
             quantity,
-           
+
             type,
-           
+
             description,
             userManual,
             weight,
@@ -126,8 +134,8 @@ exports.updateProduct = async (req, res) => {
         object.name = name || object.name;
         object.price = price || object.price;
         object.quantity = quantity || object.quantity;
-       
-       
+
+
         object.description = description || object.description;
         object.userManual = userManual || object.userManual;
         object.weight = weight || object.weight;
