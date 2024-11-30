@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Product = require("../models/Product");
 const mongoose = require("mongoose");
 const { getAllDocuments } = require("../utils/querryDocument");
+const { create } = require("../models/Donation");
 
 exports.getAllByAdmin = async (req, res) => {
     let query = {};
@@ -23,6 +24,13 @@ exports.getAllByAdmin = async (req, res) => {
             ...query,
             $text: { $search: new RegExp(req.query.search, "i") },
         };
+    }
+    if (req.query.status) {
+        query = { ...query, deliveryStatus: req.query.status };
+    }
+    if (req.query.rangeDate) {
+        const range = req.query.rangeDate.split("-").map(date => date ? new Date(date) : new Date());
+        query = { ...query, createdAt: { $gte: range[0], $lte: range[1] } };
     }
 
     const defaultField = "createdAt";

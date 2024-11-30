@@ -52,4 +52,6 @@ const DonationSchema = new mongoose.Schema({
   },
 });
 
+DonationSchema.index({ name: 'text' });
+
 module.exports = mongoose.model('Donation', DonationSchema);

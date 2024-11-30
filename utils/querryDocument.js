@@ -25,7 +25,7 @@ exports.getAllDocuments = async (
 
         const totalItems = await Model.countDocuments(query);
 
-        let objectsQuery = Model.find(query)
+        let objectsQuery = Model.find(query, !!query.search ? { score: { $meta: "textScore" } } : {})
             .sort(sort)
             .skip(skip)
             .limit(limitInt);

@@ -3,10 +3,16 @@ const DonationComment = require("../models/DonationComment");
 const { getAllDocuments } = require("../utils/querryDocument");
 
 exports.getAllDonations = async (req, res) => {
-    const query = {};
+    let query = {};
 
     if (req.query.search) {
-        query.name = { $regex: req.query.search, $options: "i" };
+        query = {
+            ...query,
+            $text: { $search: req.query.search, $diacriticSensitive: true },
+        };
+    }
+    if (req.query.status) {
+        query.status = req.query.status;
     }
 
     const defaultField = "name";

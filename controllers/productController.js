@@ -35,6 +35,8 @@ exports.getAll = async (req, res) => {
     }
 
     const defaultField = "name";
+    const enableSearchScore = true;
+
     getAllDocuments(Product, query, defaultField, req, res, populate);
 };
 
