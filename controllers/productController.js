@@ -168,13 +168,13 @@ exports.deleteOne = async (req, res) => {
         const id = req.params.id;
         const object = await Product.findByIdAndDelete(id);
 
+        if (!object) {
+            return res.status(404).json({ error: "Not found" });
+        }
+
         object.images.forEach(file => {
             deleteFile(file, res);
         });
-
-        if (object.file) {
-            deleteFile(object.file, res);
-        }
 
         res.status(204).send();
     } catch (err) {

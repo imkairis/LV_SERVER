@@ -7,8 +7,12 @@ exports.getAllCustomer = async (req, res) => {
         $or: [{ isAdmin: { $exists: false } }, { isAdmin: false }],
     };
 
-    if (req.query.search)
+    if (req.query.search) {
         query.fullname = { $regex: req.query.search, $options: "i" };
+    }
+    if (req.query.status) {
+        query.status = req.query.status;
+    }
 
     const defaultField = "fullname";
     getAllDocuments(User, query, defaultField, req, res);
@@ -76,12 +80,10 @@ exports.createOne = async (req, res) => {
 
 exports.updateOne = async (req, res) => {
     try {
-        const {  ...props } = req.body;
+        const { ...props } = req.body;
         const id = req.params.id;
 
-        
-
-        if (req.user.isAdmin === false || req.user.id !== id) {
+        if (req.user.isAdmin === false && req.user.id !== id) {
             return res.status(403).json({ error: "Forbidden" });
         }
 
@@ -91,14 +93,12 @@ exports.updateOne = async (req, res) => {
             return res.status(400).json({ error: "Not found" });
         }
 
-        
-
         for (const key in props) {
             if (key === "address") {
                 object[key] = [...object[key], props[key]];
                 continue;
             }
-            if(key === "removeAddress") {
+            if (key === "removeAddress") {
                 object.address = object.address.filter((address) => {
                     const parsedJson = JSON.parse(address);
                     return parsedJson._id !== props[key];
@@ -112,6 +112,10 @@ exports.updateOne = async (req, res) => {
                         object.address[index] = JSON.stringify(props[key].address);
                     }
                 });
+                continue;
+            }
+            if (key === 'status') {
+                object[key] = parseInt(props[key]);
                 continue;
             }
             if (object.hasOwnProperty(key)) {

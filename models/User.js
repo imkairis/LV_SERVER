@@ -52,7 +52,12 @@ const UserSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
-  }
+  },
+  status: {
+    type: Number,
+    enum: [1, 2], // 1: active, 2: block
+    default: 1
+  },
 });
 
 module.exports = mongoose.model('User', UserSchema)
